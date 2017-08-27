@@ -10,7 +10,7 @@ $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
 foreach ($events as $event) {
   
-  //$bot->replyText($event->getReplyToken(), 'TextMessage');
+  $bot->replyText($event->getReplyToken(), 'TextMessage');
 
   }
 $inputString = file_get_contents('php://input');
