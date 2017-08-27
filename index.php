@@ -10,10 +10,19 @@ $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
 foreach ($events as $event) {
   
-  $bot->replyText($event->getReplyToken(), 'TextMessage');
-
+  //$bot->replyText($event->getReplyToken(), 'TextMessage');
+  //replyTextMessage($bot, $event->getReplyToken(), 'TextMessage');
   }
-$inputString = file_get_contents('php://input');
-error_log($inputString);
+
+function replyTextMessage($bot, $replyToken, $text) {
+  $response = $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($text));
+  if (!$response->isSucceeded()) {
+    error_log('Failed! '. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+
+//$inputString = file_get_contents('php://input');
+//error_log($inputString);
 
 ?>
