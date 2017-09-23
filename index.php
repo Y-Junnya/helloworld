@@ -22,7 +22,7 @@ foreach ($events as $event) {
   //replyLocationMessage($bot,$event->getReplyToken(),'LINE','東京都渋谷区渋谷2-21-1 ヒカリエ27階','35.659025','139.703473');
   
   //ユーザーのプロフィールを取得しメッセージを作成後返信
-  $profile = $bot->getProfile($event->getUserId())->getJSONDecodeBody();
+  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
   
   $bot->replyMessage($event->getreplyToken(),
   	(new \LINE\LINEBot\MessageBuilder\MultipleMessageBuilder())
