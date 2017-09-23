@@ -31,6 +31,8 @@ foreach ($events as $event) {
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('ステータスメッセージ：'.$profile['statusMessage']))
   );
+  error_log($profile['displayName']);
+  error_log($profile['pictureUrl']);
   
   }
 
