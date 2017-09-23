@@ -25,7 +25,7 @@ foreach ($events as $event) {
   $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
   
   $bot->replyMessage($event->getReplyToken(),
-  	(new \LINE\LINEBot\MessageBuilder\MultipleMessageBuilder())
+  	(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('現在のプロフィールです。'))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
