@@ -44,7 +44,7 @@ function replyLocationMessage($bot, $replyToken, $title, $address, $lat, $lon) {
 }
 
 
-//$inputString = file_get_contents('php://input');
-//error_log($inputString);
+$inputString = file_get_contents('php://input');
+error_log($inputString);
 
 ?>
