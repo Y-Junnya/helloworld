@@ -93,7 +93,8 @@ foreach ($events as $event) {
         }
       }
     }
-    // 住所ID用変数
+  }
+  // 住所ID用変数
   $locationId;
   // XMLファイルをパースするクラス
   $client = new Goutte\Client();
