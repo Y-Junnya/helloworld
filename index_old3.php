@@ -30,7 +30,7 @@ foreach ($events as $event) {
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('ステータスメッセージ：'.$profile['statusMessage']))
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('userID：'.$profile['userId']))
+  		//->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('userID：'.$profile['userId']))
   );
   error_log($profile['displayName']);
   error_log($profile['pictureUrl']);

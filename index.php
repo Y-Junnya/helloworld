@@ -39,6 +39,20 @@ foreach ($events as $event) {
   // オウム返し
   //$bot->replyText($event->getReplyToken(), $event->getText());
   
+  //ユーザーのプロフィールを取得しメッセージを作成後返信
+  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
+  
+  $bot->replyMessage($event->getReplyToken(),
+  	(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('現在のプロフィールです。'))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('ステータスメッセージ：'.$profile['statusMessage']))
+  		//->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('userID：'.$profile['userId']))
+  );
+  error_log($profile['displayName']);
+  error_log($profile['pictureUrl']);
+  
   //--------------------------------chapter4 add start 20170923--------------------------------//
   // 入力されたテキストを取得
   $location = $event->getText();
