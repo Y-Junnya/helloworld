@@ -31,31 +31,6 @@ foreach ($events as $event) {
     error_log('Non message event has come');
     continue;
   }
-  // TextMessageクラスのインスタンスでなければ処理をスキップ
-  if (!($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage)) {
-    error_log('Non text message has come');
-    continue;
-  }
-  // オウム返し
-  //$bot->replyText($event->getReplyToken(), $event->getText());
-  
-  //ユーザーのプロフィールを取得しメッセージを作成後返信
-  /*
-  $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
-  
-  $bot->replyMessage($event->getReplyToken(),
-  	(new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder())
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('現在のプロフィールです。'))
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('ステータスメッセージ：'.$profile['statusMessage']))
-  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('userID：'.$profile['userId']))
-  );
-  error_log($profile['displayName']);
-  error_log($profile['pictureUrl']);
-  */
-  
-  //--------------------------------chapter4 add start 20170923--------------------------------//
   // TextMessageクラスのインスタンスの場合
   if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
     // 入力されたテキストを取得
@@ -94,6 +69,7 @@ foreach ($events as $event) {
       }
     }
   }
+
   // 住所ID用変数
   $locationId;
   // XMLファイルをパースするクラス
@@ -152,8 +128,37 @@ foreach ($events as $event) {
     // 以降の処理はスキップ
     continue;
   }
-  replyTextMessage($bot, $event->getReplyToken(),$location.'の住所IDは'.$locationId."です。");
-    //--------------------------------chapter4 add end 20170923--------------------------------//
+
+  // 住所IDが取得できた場合、その住所の天気情報を取得
+  $jsonString = file_get_contents('http://weather.livedoor.com/forecast/webservice/json/v1?city=' . $locationId);
+  // 文字列を連想配列に変換
+  $json = json_decode($jsonString, true);
+
+  // 形式を指定して天気の更新時刻をパース
+  $date = date_parse_from_format('Y-m-d\TH:i:sP', $json['description']['publicTime']);
+
+  // 予報が晴れの場合
+  if($json['forecasts'][0]['telop'] == '晴れ') {
+    // 天気情報、更新時刻、晴れのスタンプをまとめて送信
+    replyMultiMessage($bot, $event->getReplyToken(),
+      new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($json['description']['text'] . PHP_EOL . PHP_EOL .
+        '最終更新：' . sprintf('%s月%s日%s時%s分', $date['month'], $date['day'], $date['hour'], $date['minute'])),
+      new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(2, 513)
+    );
+  // 雨の場合
+  } else if($json['forecasts'][0]['telop'] == '雨') {
+    replyMultiMessage($bot, $event->getReplyToken(),
+      // 天気情報、更新時刻、雨のスタンプをまとめて送信
+      new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($json['description']['text'] . PHP_EOL . PHP_EOL .
+        '最終更新：' . sprintf('%s月%s日%s時%s分', $date['month'], $date['day'], $date['hour'], $date['minute'])),
+      new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(2, 507)
+    );
+  // 他
+  } else {
+    // 天気情報と更新時刻をまとめて返信
+    replyTextMessage($bot, $event->getReplyToken(), $json['description']['text'] . PHP_EOL . PHP_EOL .
+      '最終更新：' . sprintf('%s月%s日%s時%s分', $date['month'], $date['day'], $date['hour'], $date['minute']));
+  }
 }
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
