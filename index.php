@@ -24,7 +24,7 @@ foreach ($events as $event) {
   //ユーザーのプロフィールを取得しメッセージを作成後返信
   $profile = $bot->getProfile($event->getUserId())->getJSONDecodedBody();
   
-  $bot->replyMessage($event->getreplyToken(),
+  $bot->replyMessage($event->getReplyToken(),
   	(new \LINE\LINEBot\MessageBuilder\MultipleMessageBuilder())
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('現在のプロフィールです。'))
   		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
