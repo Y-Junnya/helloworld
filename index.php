@@ -19,7 +19,8 @@ foreach ($events as $event) {
   //replyImageMessage($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/preview.jpg');
   
   //ˆÊ’uî•ñ‚ğ•ÔM
-  replyLocationMessage($bot, $event->getReplyToken(), 'LINE', '“Œ‹“sa’J‹æa’J2-21-1 ƒqƒJƒŠƒG27ŠK', '35.659025', '139.703473');
+  replyLocationMessage($bot,$event->getReplyToken(),'LINE','“Œ‹“sa’J‹æa’J2-21-1 ƒqƒJƒŠƒG27ŠK','35.659025','139.703473');
+  
   }
 
 function replyTextMessage($bot, $replyToken, $text) {
