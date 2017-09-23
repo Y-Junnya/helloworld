@@ -12,14 +12,14 @@ foreach ($events as $event) {
   
   //$bot->replyText($event->getReplyToken(), 'TextMessage');
   
-  //�e�L�X�g�ԐM
+  //テキスト返信
   //replyTextMessage($bot, $event->getReplyToken(), 'TextMessage');
   
-  //�摜�ԐM
+  //画像返信
   //replyImageMessage($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/preview.jpg');
   
-  //�ʒu����ԐM
-  replyLocationMessage($bot,$event->getReplyToken(),'LINE','Test Location','35.659025','139.703473');
+  //位置情報を返信
+  replyLocationMessage($bot,$event->getReplyToken(),'LINE','東京都渋谷区渋谷2-21-1 ヒカリエ27階','35.659025','139.703473');
   
   }
 
