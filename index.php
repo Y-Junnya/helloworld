@@ -19,7 +19,18 @@ foreach ($events as $event) {
   //replyImageMessage($bot, $event->getReplyToken(), 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/original.jpg', 'https://' . $_SERVER['HTTP_HOST'] . '/imgs/preview.jpg');
   
   //位置情報を返信
-  replyLocationMessage($bot,$event->getReplyToken(),'LINE','東京都渋谷区渋谷2-21-1 ヒカリエ27階','35.659025','139.703473');
+  //replyLocationMessage($bot,$event->getReplyToken(),'LINE','東京都渋谷区渋谷2-21-1 ヒカリエ27階','35.659025','139.703473');
+  
+  //ユーザーのプロフィールを取得しメッセージを作成後返信
+  $profile = $bot->getProfile($event->getUserId())->getJSONDecodeBody();
+  
+  $bot->replyMessage($event->getreplyToken(),
+  	(new \LINE\LINEBot\MessageBuilder\MultipleMessageBuilder())
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('現在のプロフィールです。'))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('表示名：'.$profile['displayName']))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('画像URL：'.$profile['pictureUrl']))
+  		->add(new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('ステータスメッセージ：'.$profile['statusMessage']))
+  );
   
   }
 
