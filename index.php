@@ -175,7 +175,7 @@ function replyCarouselTemplate($bot, $replyToken, $alternativeText, $columnArray
 }
 
 // 盤面のImagemapを返信
-function replyImagemap($bot, $replyToken, $alternativeText, $stones, $lastStones) {
+function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
   // アクションの配列
   $actionArray = array();
   // 1つ以上のエリアが必要なためダミーのタップ可能エリアを追加
