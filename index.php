@@ -2,6 +2,9 @@
 
 // Composerでインストールしたライブラリを一括読み込み
 require_once __DIR__ . '/vendor/autoload.php';
+// テーブル名を定義
+define('TABLE_NAME_STONES', 'stones');
+
 
 // アクセストークンを使いCurlHTTPClientをインスタンス化
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('CHANNEL_ACCESS_TOKEN'));
@@ -27,6 +30,8 @@ try {
 // 配列に格納された各イベントをループで処理
 foreach ($events as $event) {
 	
+	// ユーザーの情報がデータベースに存在しない時
+  if(getStonesByUserId($event->getUserId()) === PDO::PARAM_NULL) {
 	// ゲーム開始時の石の配置
     $stones =
     [
@@ -39,9 +44,42 @@ foreach ($events as $event) {
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     ];
-	
+	// ユーザーをデータベースに登録
+    registerUser($event->getUserId(), json_encode($stones));
+    // Imagemapを返信
+    replyImagemap($bot, $event->getReplyToken(), '盤面', $stones, null);
+    // 以降の処理をスキップ
+    continue;
+  // 存在する時
+  } else {
+    // データベースから現在の石の配置を取得
+    $stones = getStonesByUserId($event->getUserId());
+  }
 	replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 
+}
+
+// ユーザーをデータベースに登録する
+function registerUser($userId, $stones) {
+  $dbh = dbConnection::getConnection();
+  $sql = 'insert into '. TABLE_NAME_STONES .' (userid, stone) values (pgp_sym_encrypt(?, \'' . getenv('DB_ENCRYPT_PASS') . '\'), ?) ';
+  $sth = $dbh->prepare($sql);
+  $sth->execute(array($userId, $stones));
+}
+
+// ユーザーIDを元にデータベースから情報を取得
+function getStonesByUserId($userId) {
+  $dbh = dbConnection::getConnection();
+  $sql = 'select stone from ' . TABLE_NAME_STONES . ' where ? = pgp_sym_decrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
+  $sth = $dbh->prepare($sql);
+  $sth->execute(array($userId));
+  // レコードが存在しなければNULL
+  if (!($row = $sth->fetch())) {
+    return PDO::PARAM_NULL;
+  } else {
+    // 石の配置を連想配列に変換し返す
+    return json_decode($row['stone']);
+  }
 }
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
@@ -195,6 +233,37 @@ function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
   $response = $bot->replyMessage($replyToken, $imagemapMessageBuilder);
   if(!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+// データベースへの接続を管理するクラス
+class dbConnection {
+  // インスタンス
+  protected static $db;
+  // コンストラクタ
+  private function __construct() {
+
+    try {
+      // 環境変数からデータベースへの接続情報を取得し
+      $url = parse_url(getenv('DATABASE_URL'));
+      // データソース
+      $dsn = sprintf('pgsql:host=%s;dbname=%s', $url['host'], substr($url['path'], 1));
+      // 接続を確立
+      self::$db = new PDO($dsn, $url['user'], $url['pass']);
+      // エラー時例外を投げるように設定
+      self::$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+    }
+    catch (PDOException $e) {
+      error_log('Connection Error: ' . $e->getMessage());
+    }
+  }
+
+  // シングルトン。存在しない場合のみインスタンス化
+  public static function getConnection() {
+    if (!self::$db) {
+      new dbConnection();
+    }
+    return self::$db;
   }
 }
 
